@@ -67,6 +67,10 @@ let
             ];
           });
 
+      generatorScript =
+        profile:
+        profile.mkGeneratorScript cfg;
+
       finaliseGeneratorService =
         svc: recursiveUpdate svc
           ({

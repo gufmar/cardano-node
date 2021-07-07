@@ -179,6 +179,7 @@ let
     intOpt  = opt types.int;
     pathOpt = opt (types.or types.path types.str);
     strOpt  = opt types.str;
+    boolOpt = opt types.bool;
     attrOpt = opt types.attrs;
     listOpt = opt (types.listOf types.attrs);
     enumOpt = set: default: description:

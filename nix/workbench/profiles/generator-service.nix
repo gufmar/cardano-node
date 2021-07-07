@@ -18,6 +18,33 @@ let
   # We're reusing configuration from a cluster node.
   exemplarNode = profile.node-services."node-0";
 
+  mkGeneratorScript =
+    cfg: with cfg;
+    [
+      { setNumberOfInputsPerTx   = 2; } ## XXX: inputs_per_tx
+      { setNumberOfOutputsPerTx  = 2; } ## XXX: outputs_per_tx
+      { setNumberOfTxs           = tx_count; }
+      { setTxAdditionalSize      = 0; } ## XXX: add_tx_size
+      { setFee                   = 0; } ## XXX: tx_fee
+      { setTTL                   = 1000000; }
+      { startProtocol            = nodeConfigFile; }
+      { setEra                   = "Mary"; } ## XXX: era
+      { setTargets =
+           __attrValues
+             (__mapAttrs (name: { ip, port }:
+                            { addr = ip; port = port; })
+                         targetNodes);
+      }
+      { setLocalSocket    = localNodeSocketPath; }
+      { readSigningKey    = "pass-partout"; filePath = sigKey; }
+      { importGenesisFund = "pass-partout"; fundKey  = "pass-partout"; }
+      { delay             = init_cooldoown; }
+      { createChange      = 1000; count = tx_count * 2; }
+      { runBenchmark      = "walletBasedBenchmark";
+                               txCount = tx_count; tps = tps; }
+      { waitBenchmark     = "walletBasedBenchmark"; }
+    ];
+
   ##
   ## generatorServiceConfig :: Map NodeId NodeSpec -> ServiceConfig
   ##
@@ -34,6 +61,8 @@ let
     backend.finaliseGeneratorService
     {
       enable = true;
+
+      inherit (backend) generatorScript;
 
       era = profile.value.era;
 
@@ -149,5 +178,5 @@ let
     profile.node-specs.value;
 in
 {
-  inherit generator-service;
+  inherit generator-service mkGeneratorScript;
 }

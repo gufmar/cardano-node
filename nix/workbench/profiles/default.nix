@@ -59,6 +59,8 @@ let
                ./generator-service.nix
                { inherit runJq backend environment profile; })
         generator-service;
+
+      inherit ()
     };
 
 in profile

@@ -13,6 +13,8 @@
       exeName = "tx-generator";
 
       extraOptionDecls = {
+        scriptMode      = boolOpt true       "Whether to use the modern script parametrisation mode of the generator.";
+
         ## TODO: the defaults should be externalised to a file.
         ##
         tx_count        =  intOpt 1000       "How many Txs to send, total.";
@@ -23,6 +25,9 @@
         tps             =  intOpt 100        "Strength of generated load, in TPS.";
         init_cooldown   =  intOpt 100        "Delay between init and main submissions.";
 
+        generatorScript    = attrOpt null    "Generator config script.";
+        generatorScriptFile = strOpg null    "Generator config script file.";
+        nodeConfigFile  =  strOpt null       "Node-style config file path.";
         nodeConfig      = attrOpt {}         "Node-style config, overrides the default.";
         sigKey          =  strOpt null       "Key with funds";
 
@@ -43,9 +48,15 @@
 
       configExeArgsFn =
         cfg: with cfg;
+          if scriptMode
+          then
+            [ "json"                   (generatorScriptFile //
+                                        (writeText (__toJSON (generatorScript cfg))))
+          ]
+          else
           [ "cliArguments"
 
-            "--config"                 "config.json" ## XXX
+            "--config"                 nodeConfigFile
 
             "--socket-path"            localNodeSocketPath
 
