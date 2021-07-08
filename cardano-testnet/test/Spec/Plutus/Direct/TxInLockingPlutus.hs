@@ -78,6 +78,11 @@ hprop_plutus = H.integration . H.runFinallies . H.workspace "chairman" $ \tempAb
 
   plutusScriptFileInUse <- H.note $ base </> "scripts/plutus/scripts/untyped-always-succeeds-txin.plutus"
 
+  H.noteEachM_ . H.listDirectory $ base
+  H.noteEachM_ . H.listDirectory $ base </> "scripts"
+  H.noteEachM_ . H.listDirectory $ base </> "scripts/plutus"
+  H.noteEachM_ . H.listDirectory $ base </> "scripts/plutus/scripts"
+
   -- This datum hash is the hash of the untyped 42
   let scriptDatumHash = "9e1199a988ba72ffd6e9c269cadb3b53b5f360ff99f112d9b2ee30c4d74ad88b"
   let plutusRequiredSpace = id @Integer 70000000
